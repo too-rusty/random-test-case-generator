@@ -105,6 +105,14 @@ def generate_random_array(file_path, config={}):
 
 
 def generate_random_string(file_path, config={}):
+
+    def get_str(chars,N,distinct,include_n):
+        res = "".join([random.choice(chars) for _ in range(N)])
+        if distinct:
+            res = "".join(chars[i%len(chars)] for i in range(N))
+            #todo shuffle
+        res = N.__str__() + "\n" + res if include_n else res
+        return res
     try:
         tc = config['n_test_cases']
         include_tc = config['include_n_test_cases_flag']
@@ -114,8 +122,15 @@ def generate_random_string(file_path, config={}):
         N_same = config['str_sizes_all_same']
         N_uniform = config['str_sizes_uniform_distribution']
         chars = config['chars']
-        pass
-
+        distinct = config['distinct_chars_flag']
+        Ns = (generate_non_uniform_random_array(tc, N_min, N_max) if not N_uniform \
+                  else generate_uniform_random_array(tc, N_min, N_max)) if not N_same \
+            else generate_non_uniform_random_array(tc, N_min, N_min)
+        res = [get_str(chars,N,distinct,include_n) for N in Ns]
+        if include_tc:
+            res.append(tc.__str__())
+            res.reverse()
+        write_to_file(file_path, "\n".join(res))
         return  True
     except Exception as e:
         print(e)
@@ -124,7 +139,57 @@ def generate_random_string(file_path, config={}):
 
 
 def generate_random_char_matrix(file_path, config={}):
-    pass
+    def gen_string(r, c, chars, distinct):
+        res = "".join([random.choice(chars) for _ in range(r*c)])
+        if distinct:
+            res = "".join(chars[i % len(chars)] for i in range(r*c))
+        return res
+
+    def make_mat_str(rows, cols, string, include_nm):
+        assert len(string) == rows * cols
+        res = [" ".join(map(lambda x: x.__str__(), string[i * cols: (i + 1) * cols]))\
+               for i in range(rows)]
+        if include_nm:
+            res.append(rows.__str__() + " " + cols.__str__())
+            res.reverse()
+        return "\n".join(res)
+
+    try:
+        tc = config['n_test_cases']
+        include_tc = config['include_n_test_cases_flag']
+        rows_min = config['num_rows_min']
+        rows_max = config['num_rows_max']
+        cols_min = config['num_cols_min']
+        cols_max = config['num_cols_max']
+        N_same = config['arr_sizes_all_same']
+        N_uniform = config['arr_sizes_uniform_distribution']
+        chars = config['chars']
+        distinct = config['distinct_flag']
+        include_nm = config['include_n_m_flag']
+        square = config['square']
+
+        if square:
+            Ns = list(generate_uniform_random_array(tc, rows_min, rows_max) if N_uniform \
+                          else generate_non_uniform_random_array(tc, rows_min, rows_max))
+            NMs = zip(Ns, Ns)
+        else:
+            Ns = list(generate_uniform_random_array(tc, rows_min, rows_max) if N_uniform \
+                          else generate_non_uniform_random_array(tc, rows_min, rows_max))
+            Ms = generate_non_uniform_random_array(tc, cols_min, cols_max)
+            NMs = zip(Ns, Ms)
+        NMs = list(NMs)
+        NMs = [NMs[0] for _ in range(tc)] if N_same else NMs
+        mat = [make_mat_str(r, c, gen_string(r, c, chars, distinct), include_nm) \
+               for r, c in NMs]
+        if include_tc:
+            mat.append(tc.__str__())
+            mat.reverse()
+        write_to_file(file_path, "\n".join(mat))
+
+        return True
+    except Exception as e:
+        print(e)
+        return False
 
 
 def generate_random_array_pairs(file_path, config={}):
@@ -244,6 +309,21 @@ def generate_random_numbers(file_path, config={}):
         print(e)
         return False
 
+# ---------- for multiple test case generation --------
+# GENERATE MULTIPLE INPUT FILES USING THIS FUNCTION
+# def generate_mulitple_test_cases(TC, lower_limit, upper_limit, base_path, generation_function, config = {}):
+#     # lowe and upper limit are limits of N in the current file
+#     # todo some precalculation
+#     tcs = [lower_limit + i for i in range(TC)]
+#     # these are the test cases then ... based on upper and lower
+#
+#     for i,tc in enumerate(tcs):
+#         file_path = base_path + (i+1).__str__() + ".in"
+#         config['n_test_cases'] = tc
+#         generation_function(file_path, config)
+#
+#
+#     pass
 
 # ---------- for manual test case generation ----------
 
@@ -256,15 +336,16 @@ def write_list_of_list(file_path, list_of_list, include_tc=True, include_n=True)
 
 
 def main():
-    parent_dir = os.path.join(os.getcwd(), "..", "generated_input")
-    generate_random_numbers(os.path.join(parent_dir, 'a.in'), config={
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    ROOT_DIR = os.path.join(ROOT_DIR, "..", "generated_input")
+    generate_random_numbers(os.path.join(ROOT_DIR, 'a.in'), config={
         'n_test_cases': 10,
         'min_value': 1,
         'max_value': 1,
         'include_n_test_cases_flag': True,
         'distinct_value_flag': True
     })
-    generate_random_array(os.path.join(parent_dir, 'b.in'), config={
+    generate_random_array(os.path.join(ROOT_DIR, 'b.in'), config={
         'n_test_cases': 10,
         'arr_size_min': 1,
         'arr_size_max': 1,  # dont care if next true
@@ -276,7 +357,7 @@ def main():
         'include_n_flag': True,
         'include_n_test_cases_flag': True,
     })
-    generate_random_array_pairs(os.path.join(parent_dir, 'c.in'), config={
+    generate_random_array_pairs(os.path.join(ROOT_DIR, 'c.in'), config={
         'n_test_cases': 10,
         'arr_size_min': 1,
         'arr_size_max': 5,  # dont care if next true
@@ -290,7 +371,7 @@ def main():
         'include_n_flag': True,
         'include_n_test_cases_flag': True,
     })
-    generate_random_matrix(os.path.join(parent_dir, 'd.in'), config={
+    generate_random_matrix(os.path.join(ROOT_DIR, 'd.in'), config={
         'n_test_cases': 10,
         'include_n_test_cases_flag': True,
         'num_rows_min': 1,
@@ -304,6 +385,17 @@ def main():
         'distinct_flag': True,
         'include_n_m_flag': True,
         'square': True
+    })
+    generate_random_string(os.path.join(ROOT_DIR, 'e.in'), config={
+        'n_test_cases' : 10,
+        'include_n_test_cases_flag' : True,
+        'include_n_flag' : True,
+        'str_size_min' : 1,
+        'str_size_max' : 10,
+        'str_sizes_all_same' : False,
+        'str_sizes_uniform_distribution' : True,
+        'chars' : "abcdefgh",
+        'distinct_chars_flag' : True,
     })
 
 
