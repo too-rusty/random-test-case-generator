@@ -397,6 +397,20 @@ def main():
         'chars' : "abcdefgh",
         'distinct_chars_flag' : True,
     })
+    generate_random_char_matrix(os.path.join(ROOT_DIR, 'f.in'), config={
+        'n_test_cases' : 10,
+        'include_n_test_cases_flag' : True,
+        'num_rows_min' : 2,
+        'num_rows_max' : 5,
+        'num_cols_min' : 3,
+        'num_cols_max' : 7,
+        'arr_sizes_all_same' : False,
+        'arr_sizes_uniform_distribution' : True,
+        'chars' : "abcdsdasljd",
+        'distinct_flag' : False,
+        'include_n_m_flag' : True,
+        'square' : False,
+    })
 
 
 if __name__ == '__main__':
