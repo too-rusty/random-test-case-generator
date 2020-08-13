@@ -1,6 +1,6 @@
 import random
 import os
-from numpy import random as npr
+import default_configs as dc
 
 
 # ------------- utils ------------------
@@ -66,7 +66,7 @@ def write_to_file(file_path, content):
 
 
 # ----------- main functions -------------------------
-def generate_random_array(file_path, config={}):
+def generate_random_array(config={}):
     def gen_arr_str(N, min_v, max_v, distinct, include_n):
         res = generate_uniform_random_array(N, min_v, max_v) if distinct \
             else generate_non_uniform_random_array(N, min_v, max_v)
@@ -88,31 +88,30 @@ def generate_random_array(file_path, config={}):
         distinct_val = config['distinct_value_flag']
         include_n = config['include_n_flag']
         include_tc = config['include_n_test_cases_flag']
-        Ns = (generate_non_uniform_random_array(tc, N_min, N_max) if not N_uniform \
-                  else generate_uniform_random_array(tc, N_min, N_max)) if not N_same \
-            else generate_non_uniform_random_array(tc, N_min, N_min)
-        res = [gen_arr_str(N, min_val, max_val, distinct_val, include_n) for N in Ns]
-        # todo shuffle res
-        if include_tc:
-            res.append(tc.__str__())
-            res.reverse()
-        content = "\n".join(res)
-        write_to_file(file_path, content)
-        return True
     except Exception as e:
         print(e)
-        return False
+        return None
+    Ns = (generate_non_uniform_random_array(tc, N_min, N_max) if not N_uniform \
+              else generate_uniform_random_array(tc, N_min, N_max)) if not N_same \
+        else generate_non_uniform_random_array(tc, N_min, N_min)
+    res = [gen_arr_str(N, min_val, max_val, distinct_val, include_n) for N in Ns]
+    # todo shuffle res
+    if include_tc:
+        res.append(tc.__str__())
+        res.reverse()
+    content = "\n".join(res)
+    return content
 
 
-def generate_random_string(file_path, config={}):
-
-    def get_str(chars,N,distinct,include_n):
+def generate_random_string(config={}):
+    def get_str(chars, N, distinct, include_n):
         res = "".join([random.choice(chars) for _ in range(N)])
         if distinct:
-            res = "".join(chars[i%len(chars)] for i in range(N))
-            #todo shuffle
+            res = "".join(chars[i % len(chars)] for i in range(N))
+            # todo shuffle
         res = N.__str__() + "\n" + res if include_n else res
         return res
+
     try:
         tc = config['n_test_cases']
         include_tc = config['include_n_test_cases_flag']
@@ -123,31 +122,30 @@ def generate_random_string(file_path, config={}):
         N_uniform = config['str_sizes_uniform_distribution']
         chars = config['chars']
         distinct = config['distinct_chars_flag']
-        Ns = (generate_non_uniform_random_array(tc, N_min, N_max) if not N_uniform \
-                  else generate_uniform_random_array(tc, N_min, N_max)) if not N_same \
-            else generate_non_uniform_random_array(tc, N_min, N_min)
-        res = [get_str(chars,N,distinct,include_n) for N in Ns]
-        if include_tc:
-            res.append(tc.__str__())
-            res.reverse()
-        write_to_file(file_path, "\n".join(res))
-        return  True
     except Exception as e:
         print(e)
-        return  False
+        return (None, False)
+    Ns = (generate_non_uniform_random_array(tc, N_min, N_max) if not N_uniform \
+              else generate_uniform_random_array(tc, N_min, N_max)) if not N_same \
+        else generate_non_uniform_random_array(tc, N_min, N_min)
+    res = [get_str(chars, N, distinct, include_n) for N in Ns]
+    if include_tc:
+        res.append(tc.__str__())
+        res.reverse()
+    content = "\n".join(res)
+    return (content, True)
 
 
-
-def generate_random_char_matrix(file_path, config={}):
+def generate_random_char_matrix(config={}):
     def gen_string(r, c, chars, distinct):
-        res = "".join([random.choice(chars) for _ in range(r*c)])
+        res = "".join([random.choice(chars) for _ in range(r * c)])
         if distinct:
-            res = "".join(chars[i % len(chars)] for i in range(r*c))
+            res = "".join(chars[i % len(chars)] for i in range(r * c))
         return res
 
     def make_mat_str(rows, cols, string, include_nm):
         assert len(string) == rows * cols
-        res = [" ".join(map(lambda x: x.__str__(), string[i * cols: (i + 1) * cols]))\
+        res = [" ".join(map(lambda x: x.__str__(), string[i * cols: (i + 1) * cols])) \
                for i in range(rows)]
         if include_nm:
             res.append(rows.__str__() + " " + cols.__str__())
@@ -167,32 +165,30 @@ def generate_random_char_matrix(file_path, config={}):
         distinct = config['distinct_flag']
         include_nm = config['include_n_m_flag']
         square = config['square']
-
-        if square:
-            Ns = list(generate_uniform_random_array(tc, rows_min, rows_max) if N_uniform \
-                          else generate_non_uniform_random_array(tc, rows_min, rows_max))
-            NMs = zip(Ns, Ns)
-        else:
-            Ns = list(generate_uniform_random_array(tc, rows_min, rows_max) if N_uniform \
-                          else generate_non_uniform_random_array(tc, rows_min, rows_max))
-            Ms = generate_non_uniform_random_array(tc, cols_min, cols_max)
-            NMs = zip(Ns, Ms)
-        NMs = list(NMs)
-        NMs = [NMs[0] for _ in range(tc)] if N_same else NMs
-        mat = [make_mat_str(r, c, gen_string(r, c, chars, distinct), include_nm) \
-               for r, c in NMs]
-        if include_tc:
-            mat.append(tc.__str__())
-            mat.reverse()
-        write_to_file(file_path, "\n".join(mat))
-
-        return True
     except Exception as e:
         print(e)
-        return False
+        return (None, False)
+    if square:
+        Ns = list(generate_uniform_random_array(tc, rows_min, rows_max) if N_uniform \
+                      else generate_non_uniform_random_array(tc, rows_min, rows_max))
+        NMs = zip(Ns, Ns)
+    else:
+        Ns = list(generate_uniform_random_array(tc, rows_min, rows_max) if N_uniform \
+                      else generate_non_uniform_random_array(tc, rows_min, rows_max))
+        Ms = generate_non_uniform_random_array(tc, cols_min, cols_max)
+        NMs = zip(Ns, Ms)
+    NMs = list(NMs)
+    NMs = [NMs[0] for _ in range(tc)] if N_same else NMs
+    mat = [make_mat_str(r, c, gen_string(r, c, chars, distinct), include_nm) \
+           for r, c in NMs]
+    if include_tc:
+        mat.append(tc.__str__())
+        mat.reverse()
+    content = "\n".join(mat)
+    return (content, True)
 
 
-def generate_random_array_pairs(file_path, config={}):
+def generate_random_array_pairs(config={}):
     # for inc dec the ranges must be valid
     # need to figure out for distinct or maybe not needed
     def gen_pairs_str(N, min0, max0, min1, max1, order, include_n):
@@ -220,22 +216,22 @@ def generate_random_array_pairs(file_path, config={}):
         order = config['a_b_order']
         include_n = config['include_n_flag']
         include_tc = config['include_n_test_cases_flag']
-        Ns = (generate_non_uniform_random_array(tc, N_min, N_max) if not N_uniform \
-                  else generate_uniform_random_array(tc, N_min, N_max)) if not N_same \
-            else generate_non_uniform_random_array(tc, N_min, N_min)
-        res = [gen_pairs_str(N, min_first, max_first, min_second, max_second, order, include_n) for N in Ns]
-        if include_tc:
-            res.append(tc.__str__())
-            res.reverse()
-        content = "\n".join(res)
-        write_to_file(file_path, content)
-        return True
     except Exception as e:
         print(e)
-        return False
+        return (None, False)
+    Ns = (generate_non_uniform_random_array(tc, N_min, N_max) if not N_uniform \
+              else generate_uniform_random_array(tc, N_min, N_max)) if not N_same \
+        else generate_non_uniform_random_array(tc, N_min, N_min)
+    res = [gen_pairs_str(N, min_first, max_first, min_second, max_second, order, include_n) for N in Ns]
+    if include_tc:
+        res.append(tc.__str__())
+        res.reverse()
+    content = "\n".join(res)
+    # write_to_file(file_path, content)
+    return (content, True)
 
 
-def generate_random_matrix(file_path, config={}):
+def generate_random_matrix(config={}):
     # todo make different rows and columns
     def gen_matrix(r, c, min_v, max_v, distinct):
         return list(generate_uniform_random_array(r * c, min_v, max_v) if distinct \
@@ -263,51 +259,59 @@ def generate_random_matrix(file_path, config={}):
         distinct = config['distinct_flag']
         include_nm = config['include_n_m_flag']
         square = config['square']
-
-        if square:
-            Ns = list(generate_uniform_random_array(tc, rows_min, rows_max) if N_uniform \
-                          else generate_non_uniform_random_array(tc, rows_min, rows_max))
-            NMs = zip(Ns, Ns)
-        else:
-            Ns = list(generate_uniform_random_array(tc, rows_min, rows_max) if N_uniform \
-                          else generate_non_uniform_random_array(tc, rows_min, rows_max))
-            Ms = generate_non_uniform_random_array(tc, cols_min, cols_max)
-            NMs = zip(Ns, Ms)
-        NMs = list(NMs)
-        NMs = [NMs[0] for _ in range(tc)] if N_same else NMs
-        mat = [make_mat_str(r, c, gen_matrix(r, c, min_val, max_val, distinct), include_nm) \
-               for r, c in NMs]
-        if include_tc:
-            mat.append(tc.__str__())
-            mat.reverse()
-        write_to_file(file_path, "\n".join(mat))
-        return True
-
     except Exception as e:
         print(e)
-        return False
+        return (None, False)
+    if square:
+        Ns = list(generate_uniform_random_array(tc, rows_min, rows_max) if N_uniform \
+                      else generate_non_uniform_random_array(tc, rows_min, rows_max))
+        NMs = zip(Ns, Ns)
+    else:
+        Ns = list(generate_uniform_random_array(tc, rows_min, rows_max) if N_uniform \
+                      else generate_non_uniform_random_array(tc, rows_min, rows_max))
+        Ms = generate_non_uniform_random_array(tc, cols_min, cols_max)
+        NMs = zip(Ns, Ms)
+    NMs = list(NMs)
+    NMs = [NMs[0] for _ in range(tc)] if N_same else NMs
+    mat = [make_mat_str(r, c, gen_matrix(r, c, min_val, max_val, distinct), include_nm) \
+           for r, c in NMs]
+    if include_tc:
+        mat.append(tc.__str__())
+        mat.reverse()
+    # write_to_file(file_path, "\n".join(mat))
+    return ("\n".join(mat), True)
 
 
-def generate_random_numbers(file_path, config={}):
+def generate_random_numbers(config={}):
     try:
         n_test_cases = config['n_test_cases']
         min_val = config['min_value']
         max_val = config['max_value']
         include_n = config['include_n_test_cases_flag']
         uniform = config['distinct_value_flag']
-        nums = generate_uniform_random_array(n_test_cases, min_val, max_val) if uniform \
-            else generate_non_uniform_random_array(n_test_cases, min_val, max_val)
-        nums = list(nums)
-        # todo shuffle
-        if include_n:
-            nums.append(n_test_cases)
-            nums.reverse()
-        content = "\n".join(map(lambda x: x.__str__(), nums))
-        write_to_file(file_path, content)
-        return True
     except Exception as e:
         print(e)
-        return False
+        return (None, False)
+    nums = generate_uniform_random_array(n_test_cases, min_val, max_val) if uniform \
+        else generate_non_uniform_random_array(n_test_cases, min_val, max_val)
+    nums = list(nums)
+    # todo shuffle
+    if include_n:
+        nums.append(n_test_cases)
+        nums.reverse()
+    content = "\n".join(map(lambda x: x.__str__(), nums))
+
+    return (content, True)
+
+
+def generate_and_write(func, config):
+    def write(file_path):
+        content = func(config)
+        if content is None: return False
+        write_to_file(file_path, content)
+        return True
+    return write
+
 
 # ---------- for multiple test case generation --------
 # GENERATE MULTIPLE INPUT FILES USING THIS FUNCTION
@@ -335,83 +339,113 @@ def write_list_of_list(file_path, list_of_list, include_tc=True, include_n=True)
     pass
 
 
-def main():
-    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-    ROOT_DIR = os.path.join(ROOT_DIR, "..", "generated_input")
-    generate_random_numbers(os.path.join(ROOT_DIR, 'a.in'), config={
-        'n_test_cases': 10,
-        'min_value': 1,
-        'max_value': 1,
-        'include_n_test_cases_flag': True,
-        'distinct_value_flag': True
-    })
-    generate_random_array(os.path.join(ROOT_DIR, 'b.in'), config={
-        'n_test_cases': 10,
-        'arr_size_min': 1,
-        'arr_size_max': 1,  # dont care if next true
-        'arr_sizes_all_same': False,
-        'arr_sizes_uniform_distribution': False,  # dont care if prev true
-        'min_value': 2,
-        'max_value': 10,
-        'distinct_value_flag': True,
-        'include_n_flag': True,
-        'include_n_test_cases_flag': True,
-    })
-    generate_random_array_pairs(os.path.join(ROOT_DIR, 'c.in'), config={
-        'n_test_cases': 10,
-        'arr_size_min': 1,
-        'arr_size_max': 5,  # dont care if next true
-        'arr_sizes_all_same': False,
-        'arr_sizes_uniform_distribution': True,  # dont care if prev true
-        'min_first_value': 2,
-        'max_first_value': 10,
-        'min_second_value': 2,
-        'max_second_value': 12,  # if inc then > max_first_val and so on
-        'a_b_order': 'inc',
-        'include_n_flag': True,
-        'include_n_test_cases_flag': True,
-    })
-    generate_random_matrix(os.path.join(ROOT_DIR, 'd.in'), config={
-        'n_test_cases': 10,
-        'include_n_test_cases_flag': True,
-        'num_rows_min': 1,
-        'num_rows_max': 4,
-        'num_cols_min': 1,
-        'num_cols_max': 4,
-        'arr_sizes_all_same': True,  # true if all n ,m are same
-        'arr_sizes_uniform_distribution': False,
-        'min_value': 1,
-        'max_value': 10,
-        'distinct_flag': True,
-        'include_n_m_flag': True,
-        'square': True
-    })
-    generate_random_string(os.path.join(ROOT_DIR, 'e.in'), config={
-        'n_test_cases' : 10,
-        'include_n_test_cases_flag' : True,
-        'include_n_flag' : True,
-        'str_size_min' : 1,
-        'str_size_max' : 10,
-        'str_sizes_all_same' : False,
-        'str_sizes_uniform_distribution' : True,
-        'chars' : "abcdefgh",
-        'distinct_chars_flag' : True,
-    })
-    generate_random_char_matrix(os.path.join(ROOT_DIR, 'f.in'), config={
-        'n_test_cases' : 10,
-        'include_n_test_cases_flag' : True,
-        'num_rows_min' : 2,
-        'num_rows_max' : 5,
-        'num_cols_min' : 3,
-        'num_cols_max' : 7,
-        'arr_sizes_all_same' : False,
-        'arr_sizes_uniform_distribution' : True,
-        'chars' : "abcdsdasljd",
-        'distinct_flag' : False,
-        'include_n_m_flag' : True,
-        'square' : False,
-    })
+IN_OUT_DIR = os.path.dirname(os.path.abspath(__file__))
+IN_OUT_DIR = os.path.join(IN_OUT_DIR, "..", "generated_input")
+CODE_DIR = os.path.join(IN_OUT_DIR, "..", "src")
+
+
+def test():
+    path = os.path.join(IN_OUT_DIR, 'a.in')
+    func = generate_and_write(generate_random_numbers, dc.DEFAULT_RANDOM_NUMBERS_CONFIG)
+    func(path)
+
+    path = os.path.join(IN_OUT_DIR, 'b.in')
+    func = generate_and_write(generate_random_array, dc.DEFAULT_RANDOM_ARRAY_CONFIG)
+    func(path)
+
+    path = path = os.path.join(IN_OUT_DIR, 'c.in')
+    func = generate_and_write(generate_random_array_pairs, dc.DEFAULT_RANDOM_ARRAY_PAIRS_CONFIG)
+    func(path)
+
+    path = os.path.join(IN_OUT_DIR, 'd.in')
+    func = generate_and_write(generate_random_matrix, dc.DEFAULT_RANDOM_MATRIX_CONFIG)
+    func(path)
+
+    path = os.path.join(IN_OUT_DIR, 'e.in')
+    func = generate_and_write(generate_random_string, dc.DEFAULT_RANDOM_STRING_CONFIG)
+    func(path)
+
+    path = os.path.join(IN_OUT_DIR, 'f.in')
+    func = generate_and_write(generate_random_char_matrix, dc.DEFAULT_RANDOM_CHAR_MATRIX_CONFIG)
+    func(path)
+
+def list_to_str(list, separator = " "):
+    return separator.join(map(lambda x : x.__str__(), list))
+
+def to_str(x):
+    return  x.__str__()
+
+# generates a single input file
+def generate_custom_input():
+    """
+    for two_sum
+
+    10              -> tc
+    N target        -> array pair, random seems to work
+    A1 A2 A3 .. An  -> array of random numbers
+
+    """
+    tc = random.randint(1,10)
+    content = to_str(tc) # first line is tc
+    for _ in range(tc):
+        arr_size = random.randint(2,100)
+        second_line = list_to_str([to_str(arr_size), random.randint(1,400)])
+        config = dc.DEFAULT_RANDOM_ARRAY_CONFIG
+        config['arr_size_max'] = config['arr_size_min'] = arr_size
+        third_line = generate_random_array(config) # already produces string
+        content = list_to_str([content, second_line, third_line], "\n")
+    return content
+
+
+def generate_n_inputs(n=10,in_dir=IN_OUT_DIR):
+    os.chdir(in_dir)
+    _ = [os.remove(f) for f in os.listdir()]#remove all
+
+    for i in range(n):
+        content = generate_custom_input()
+        file_path = os.path.join(in_dir, to_str(i+1) + ".in")
+        write_to_file(file_path, content)
+
+# for python code
+def generate_outputs(code_file_name="code.py", in_dir=IN_OUT_DIR, out_dir=IN_OUT_DIR):
+    # call the func on every input file
+    # present in the in_dir
+    # assumes format to be all test cases
+    # else can be modified using config
+    # by default same dir
+    code_file_path = os.path.join(CODE_DIR, code_file_name)
+    os.chdir(in_dir)
+    # remove all prev out files
+    _ = [os.remove(f) for f in os.listdir() \
+         if f.endswith(".out")]
+
+    in_files = [os.path.join(in_dir, f) for f in os.listdir()]
+    out_files = [os.path.join(out_dir, f[:-3] + ".out") \
+                 for f in os.listdir()]
+
+    def gen_out(in_file, out_file):
+        read_in_file = "cat " + in_file
+        exec_code = "python " + code_file_path
+        command = read_in_file + " | " + exec_code + " >> " \
+                  + out_file
+        os.system(command)
+
+    for in_file, out_file in zip(in_files, out_files):
+        gen_out(in_file, out_file)
 
 
 if __name__ == '__main__':
-    main()
+    generate_n_inputs(n=1)
+    generate_outputs()
+    # test()
+    """
+    steps
+    1. write code in code.py and call the function 
+        inside if __name__ == ....
+        NOTE: write function like reading from actual 
+            std input and also test it ...
+    2. generate inputs, write the code inside generate_inputs
+        function
+    3. run the current file
+        python main.py 
+    """
