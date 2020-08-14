@@ -449,9 +449,19 @@ def generate_outputs(code_type='python', code_file_name="code.py",
         os.system("rm a.out")
 
 
+def zip_it(problem_id, in_out_dir=IN_OUT_DIR):
+    os.chdir(in_out_dir)
+    base_dir = os.path.join(in_out_dir, "../")
+    file_path = base_dir + "problem_" + to_str(problem_id) + ".zip"
+    print(file_path)
+    command = ["zip", file_path, "./{*.in,*.out}"]
+    os.system(" ".join(command))
+
+
 if __name__ == '__main__':
     # generate_n_inputs(n=20)
     generate_outputs(code_type='cpp', code_file_name="code.cpp")
+    zip_it(1002)
     # test()
     """
     steps
