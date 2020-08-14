@@ -124,7 +124,7 @@ def generate_random_string(config={}):
         distinct = config['distinct_chars_flag']
     except Exception as e:
         print(e)
-        return (None, False)
+        return None
     Ns = (generate_non_uniform_random_array(tc, N_min, N_max) if not N_uniform \
               else generate_uniform_random_array(tc, N_min, N_max)) if not N_same \
         else generate_non_uniform_random_array(tc, N_min, N_min)
@@ -133,7 +133,7 @@ def generate_random_string(config={}):
         res.append(tc.__str__())
         res.reverse()
     content = "\n".join(res)
-    return (content, True)
+    return content
 
 
 def generate_random_char_matrix(config={}):
@@ -167,7 +167,7 @@ def generate_random_char_matrix(config={}):
         square = config['square']
     except Exception as e:
         print(e)
-        return (None, False)
+        return None
     if square:
         Ns = list(generate_uniform_random_array(tc, rows_min, rows_max) if N_uniform \
                       else generate_non_uniform_random_array(tc, rows_min, rows_max))
@@ -185,7 +185,7 @@ def generate_random_char_matrix(config={}):
         mat.append(tc.__str__())
         mat.reverse()
     content = "\n".join(mat)
-    return (content, True)
+    return content
 
 
 def generate_random_array_pairs(config={}):
@@ -218,7 +218,7 @@ def generate_random_array_pairs(config={}):
         include_tc = config['include_n_test_cases_flag']
     except Exception as e:
         print(e)
-        return (None, False)
+        return None
     Ns = (generate_non_uniform_random_array(tc, N_min, N_max) if not N_uniform \
               else generate_uniform_random_array(tc, N_min, N_max)) if not N_same \
         else generate_non_uniform_random_array(tc, N_min, N_min)
@@ -229,7 +229,7 @@ def generate_random_array_pairs(config={}):
         res.reverse()
     content = "\n".join(res)
     # write_to_file(file_path, content)
-    return (content, True)
+    return content
 
 
 def generate_random_matrix(config={}):
@@ -263,7 +263,7 @@ def generate_random_matrix(config={}):
         square = config['square']
     except Exception as e:
         print(e)
-        return (None, False)
+        return None
     if square:
         Ns = list(generate_uniform_random_array(tc, rows_min, rows_max) if N_uniform \
                       else generate_non_uniform_random_array(tc, rows_min, rows_max))
@@ -281,7 +281,7 @@ def generate_random_matrix(config={}):
         mat.append(tc.__str__())
         mat.reverse()
     # write_to_file(file_path, "\n".join(mat))
-    return ("\n".join(mat), True)
+    return "\n".join(mat)
 
 
 def generate_random_numbers(config={}):
@@ -293,7 +293,7 @@ def generate_random_numbers(config={}):
         uniform = config['distinct_value_flag']
     except Exception as e:
         print(e)
-        return (None, False)
+        return None
     nums = generate_uniform_random_array(n_test_cases, min_val, max_val) if uniform \
         else generate_non_uniform_random_array(n_test_cases, min_val, max_val)
     nums = list(nums)
@@ -303,7 +303,7 @@ def generate_random_numbers(config={}):
         nums.reverse()
     content = "\n".join(map(lambda x: x.__str__(), nums))
 
-    return (content, True)
+    return content
 
 
 def generate_and_write(func, config):
@@ -382,32 +382,36 @@ def to_str(x):
 
 
 # generates a single input file
+# make change here
 def generate_custom_input():
     """
-    for two_sum
+    for longest common prefix
 
-    10              -> tc
-    N target        -> array pair, random seems to work
-    A1 A2 A3 .. An  -> array of random numbers
+    T - 10
+    N - 1000
+    N strings
 
     """
     tc = random.randint(1, 10)
     content = to_str(tc)  # first line is tc
     for _ in range(tc):
-        arr_size = random.randint(2, 100)
-        second_line = list_to_str([to_str(arr_size), random.randint(1, 400)])
-        config = dc.DEFAULT_RANDOM_ARRAY_CONFIG
-        config['arr_size_max'] = config['arr_size_min'] = arr_size
-        third_line = generate_random_array(config)  # already produces string
+        arr_size = random.randint(2, 1000)
+        # string vector size
+        second_line = list_to_str([arr_size])
+        config = dc.DEFAULT_RANDOM_STRING_CONFIG
+        config['n_test_cases'] = arr_size
+        config['str_sizes_uniform_distribution'] = random.choice([True,False])
+        config['distinct_chars_flag'] = random.choice([True,False])
+        third_line = generate_random_string(config)  # already produces string
         content = list_to_str([content, second_line, third_line], "\n")
     return content
 
-
-def generate_n_inputs(n=10, in_dir=IN_OUT_DIR):
+# no changes required here
+def generate_n_inputs(st=0, n=10, in_dir=IN_OUT_DIR):
     os.chdir(in_dir)
     _ = [os.remove(f) for f in os.listdir()]  # remove all
 
-    for i in range(n):
+    for i in range(st,st+n,1):
         content = generate_custom_input()
         file_path = os.path.join(in_dir, to_str(i + 1) + ".in")
         write_to_file(file_path, content)
@@ -459,7 +463,10 @@ def zip_it(problem_id, in_out_dir=IN_OUT_DIR):
 
 
 if __name__ == '__main__':
-    # generate_n_inputs(n=20)
+    # can specify st as generate_n_inputs(st=2,n=10)
+    # generates 10 tcs from no.2 and
+    # the first test case can be input manually
+    generate_n_inputs(n=1)
     generate_outputs(code_type='cpp', code_file_name="code.cpp")
     zip_it(1002)
     # test()

@@ -63,14 +63,14 @@ DEFAULT_RANDOM_CHAR_MATRIX_CONFIG = config = {
 }
 
 DEFAULT_RANDOM_STRING_CONFIG = {
-    'n_test_cases': 10,
+    'n_test_cases': 1,
     'include_n_test_cases_flag': False,
     'include_n_flag': False,
     'str_size_min': 1,
-    'str_size_max': 10,
+    'str_size_max': 100,
     'str_sizes_all_same': False,
     'str_sizes_uniform_distribution': True,
-    'chars': "abcdefgh",
+    'chars': "abcdefghijklmnopqrstuvwxyz",
     'distinct_chars_flag': True,
 }
 
