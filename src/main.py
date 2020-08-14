@@ -222,7 +222,8 @@ def generate_random_array_pairs(config={}):
     Ns = (generate_non_uniform_random_array(tc, N_min, N_max) if not N_uniform \
               else generate_uniform_random_array(tc, N_min, N_max)) if not N_same \
         else generate_non_uniform_random_array(tc, N_min, N_min)
-    res = [gen_pairs_str(N, min_first, max_first, min_second, max_second, order, include_n) for N in Ns]
+    res = [gen_pairs_str(N, min_first, max_first, min_second, max_second, order, include_n) \
+           for N in Ns]
     if include_tc:
         res.append(tc.__str__())
         res.reverse()
@@ -239,7 +240,8 @@ def generate_random_matrix(config={}):
 
     def make_mat_str(rows, cols, arr, include_nm):
         assert len(arr) == rows * cols
-        res = [" ".join(map(lambda x: x.__str__(), arr[i * cols: (i + 1) * cols])) for i in range(rows)]
+        res = [" ".join(map(lambda x: x.__str__(), arr[i * cols: (i + 1) * cols])) \
+               for i in range(rows)]
         if include_nm:
             res.append(rows.__str__() + " " + cols.__str__())
             res.reverse()
@@ -412,13 +414,14 @@ def generate_n_inputs(n=10, in_dir=IN_OUT_DIR):
 
 
 # for python code
-def generate_outputs(code_file_name="code.py", in_dir=IN_OUT_DIR, out_dir=IN_OUT_DIR):
+def generate_outputs(code_type='python', code_file_name="code.py",
+                     in_dir=IN_OUT_DIR, out_dir=IN_OUT_DIR, code_dir=CODE_DIR):
     # call the func on every input file
     # present in the in_dir
     # assumes format to be all test cases
     # else can be modified using config
     # by default same dir
-    code_file_path = os.path.join(CODE_DIR, code_file_name)
+    code_file_path = os.path.join(code_dir, code_file_name)
     os.chdir(in_dir)
     # remove all prev out files
     _ = [os.remove(f) for f in os.listdir() \
@@ -427,21 +430,28 @@ def generate_outputs(code_file_name="code.py", in_dir=IN_OUT_DIR, out_dir=IN_OUT
     in_files = [os.path.join(in_dir, f) for f in os.listdir()]
     out_files = [os.path.join(out_dir, f[:-3] + ".out") \
                  for f in os.listdir()]
+    exec_code_command = "python "
+    if code_type is 'cpp':
+        command = 'c++ -std=c++14 ' + code_file_path
+        os.system(command)
+        exec_code_command = './a.out '
 
     def gen_out(in_file, out_file):
         read_in_file = "cat " + in_file
-        exec_code = "python " + code_file_path
+        exec_code = exec_code_command + code_file_path
         command = read_in_file + " | " + exec_code + " >> " \
                   + out_file
         os.system(command)
 
     for in_file, out_file in zip(in_files, out_files):
         gen_out(in_file, out_file)
+    if code_type is 'cpp':
+        os.system("rm a.out")
 
 
 if __name__ == '__main__':
     # generate_n_inputs(n=20)
-    generate_outputs()
+    generate_outputs(code_type='cpp', code_file_name="code.cpp")
     # test()
     """
     steps
