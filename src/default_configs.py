@@ -27,7 +27,7 @@ DEFAULT_RANDOM_ARRAY_PAIRS_CONFIG = {
     'max_first_value': 10,
     'min_second_value': 2,
     'max_second_value': 12,
-    'a_b_order': 'rand',# if inc then > max_first_val and so on
+    'a_b_order': 'rand',  # if inc then > max_first_val and so on
     'include_n_flag': False,
     'include_n_test_cases_flag': False,
 }

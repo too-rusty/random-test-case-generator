@@ -310,6 +310,7 @@ def generate_and_write(func, config):
         if content is None: return False
         write_to_file(file_path, content)
         return True
+
     return write
 
 
@@ -369,11 +370,14 @@ def test():
     func = generate_and_write(generate_random_char_matrix, dc.DEFAULT_RANDOM_CHAR_MATRIX_CONFIG)
     func(path)
 
-def list_to_str(list, separator = " "):
-    return separator.join(map(lambda x : x.__str__(), list))
+
+def list_to_str(list, separator=" "):
+    return separator.join(map(lambda x: x.__str__(), list))
+
 
 def to_str(x):
-    return  x.__str__()
+    return x.__str__()
+
 
 # generates a single input file
 def generate_custom_input():
@@ -385,26 +389,27 @@ def generate_custom_input():
     A1 A2 A3 .. An  -> array of random numbers
 
     """
-    tc = random.randint(1,10)
-    content = to_str(tc) # first line is tc
+    tc = random.randint(1, 10)
+    content = to_str(tc)  # first line is tc
     for _ in range(tc):
-        arr_size = random.randint(2,100)
-        second_line = list_to_str([to_str(arr_size), random.randint(1,400)])
+        arr_size = random.randint(2, 100)
+        second_line = list_to_str([to_str(arr_size), random.randint(1, 400)])
         config = dc.DEFAULT_RANDOM_ARRAY_CONFIG
         config['arr_size_max'] = config['arr_size_min'] = arr_size
-        third_line = generate_random_array(config) # already produces string
+        third_line = generate_random_array(config)  # already produces string
         content = list_to_str([content, second_line, third_line], "\n")
     return content
 
 
-def generate_n_inputs(n=10,in_dir=IN_OUT_DIR):
+def generate_n_inputs(n=10, in_dir=IN_OUT_DIR):
     os.chdir(in_dir)
-    _ = [os.remove(f) for f in os.listdir()]#remove all
+    _ = [os.remove(f) for f in os.listdir()]  # remove all
 
     for i in range(n):
         content = generate_custom_input()
-        file_path = os.path.join(in_dir, to_str(i+1) + ".in")
+        file_path = os.path.join(in_dir, to_str(i + 1) + ".in")
         write_to_file(file_path, content)
+
 
 # for python code
 def generate_outputs(code_file_name="code.py", in_dir=IN_OUT_DIR, out_dir=IN_OUT_DIR):
@@ -435,7 +440,7 @@ def generate_outputs(code_file_name="code.py", in_dir=IN_OUT_DIR, out_dir=IN_OUT
 
 
 if __name__ == '__main__':
-    generate_n_inputs(n=1)
+    # generate_n_inputs(n=20)
     generate_outputs()
     # test()
     """
