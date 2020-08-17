@@ -12,7 +12,7 @@ DEFAULT_RANDOM_ARRAY_CONFIG = {
     'arr_sizes_all_same': False,
     'arr_sizes_uniform_distribution': False,  # dont care if prev true
     'min_value': 1,
-    'max_value': 200,
+    'max_value': 1000*1000,
     'distinct_value_flag': True,
     'include_n_flag': False,
     'include_n_test_cases_flag': False,

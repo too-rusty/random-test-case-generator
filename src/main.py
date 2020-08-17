@@ -1,6 +1,7 @@
 import random
 import os
 import default_configs as dc
+import time
 
 
 # ------------- utils ------------------
@@ -54,7 +55,7 @@ def generate_pairs_uniform(N, p0min, p0max, p1min, p1max, order):
             yield (first, random.randint(first, min(p1max, max(first + 1, p1max))))
 
 
-def write_to_file(file_path, content):
+def write_to_file(file_path: str, content: str):
     try:
         file = open(file_path, 'w')
         file.write(content)
@@ -388,21 +389,22 @@ def generate_custom_input():
     for longest common prefix
 
     T - 10
-    N - 1000
-    N strings
+    N - 1000, k
+    N integers
 
     """
-    tc = random.randint(1, 10)
+    tc = random.randint(1, 20)
     content = to_str(tc)  # first line is tc
     for _ in range(tc):
-        arr_size = random.randint(2, 1000)
+        arr_size = random.randint(1, 50000)
+        k = random.randint(1,1000*1000*1000)
         # string vector size
-        second_line = list_to_str([arr_size])
-        config = dc.DEFAULT_RANDOM_STRING_CONFIG
-        config['n_test_cases'] = arr_size
-        config['str_sizes_uniform_distribution'] = random.choice([True,False])
+        second_line = list_to_str([arr_size,k])
+        config = dc.DEFAULT_RANDOM_ARRAY_CONFIG
+        config['arr_size_max'] = arr_size
+        config['arr_size_min'] = arr_size
         config['distinct_chars_flag'] = random.choice([True,False])
-        third_line = generate_random_string(config)  # already produces string
+        third_line = generate_random_array(config)  # already produces string
         content = list_to_str([content, second_line, third_line], "\n")
     return content
 
@@ -447,8 +449,14 @@ def generate_outputs(code_type='python', code_file_name="code.py",
                   + out_file
         os.system(command)
 
+    counter = 0
     for in_file, out_file in zip(in_files, out_files):
+        counter += 1
+        st = time.time()
         gen_out(in_file, out_file)
+        en = time.time()
+        print("output generated for ", counter, "in ", (en - st) // 1000)
+
     if code_type is 'cpp':
         os.system("rm a.out")
 
@@ -468,7 +476,7 @@ if __name__ == '__main__':
     # the first test case can be input manually
     generate_n_inputs(n=1)
     generate_outputs(code_type='cpp', code_file_name="code.cpp")
-    zip_it(1002)
+    zip_it(1007)
     # test()
     """
     steps

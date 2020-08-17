@@ -9,37 +9,43 @@ using namespace std;
 
 #define fastio ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
 #define t_times int t; cin >> t; while(t--)
-
-string longestCommonPrefix(vector<string>& strs) {
-    if((int)strs.size() == 0) return "";
-    auto min = [] (int x,int y) {
-        return x < y ? x : y;
-    };
-    string ans = "";
-    int n = INT_MAX;
-    for(string& str : strs)
-        n = min(n, str.length());
-    for(int i = 0; i < n; ++i) {
-        int flag = 1;
-        char c = strs[0][i];
-        for(string& str : strs) if(str[i] != c) flag = 0;
-        if(flag) ans += c;
-        else break;
-    }
-    return ans;
+typedef long long LL;
+LL __gcd(LL x, LL y){
+    if(x % y == 0) return y;
+    return __gcd(y,x%y);
 }
-
+void rotate(vector<int>& nums, int k) {
+    // n^2 complexity
+    int n = nums.size();
+//    k = k%n;
+    for(int c = 0; c < k; ++c) {
+        int last = nums[n-1];
+        for(int i = n-1; i > 0; --i) {
+            nums[i] = nums[i-1];
+        }
+        nums[0]=last;
+    }
+}
+void rotate2(vector<int>& nums, int k) {
+     // n complexity
+     int n = nums.size();
+     k = k%n;
+     if(k == 0) k = n;
+     int g = __gcd(n,k);
+     for(int i = 0; i < g; ++i)
+         for(int j = 0; j <  n / g; ++j)
+             swap(nums[i], nums[ ( i + j * k ) % n ] );
+}
 void solve() {
     // code goes here
-    int n; cin >> n;
-    vector<string> strs;
-    for(int i = 0; i < n; ++i) {
-        string s; cin >> s;
-        strs.push_back(s);
-    }
-    cout << longestCommonPrefix(strs) << endl;
-
+    int n,k; cin >> n >> k;
+    vector<int> v(n);
+    for(int i = 0; i < n; ++i) cin >> v[i];
+    rotate2(v,k);
+    for(int i = 0; i < n; ++i)cout<<v[i]<<" ";
+    cout<<endl;
 }
+
 
 int main(int argc, char const *argv[])
 {
