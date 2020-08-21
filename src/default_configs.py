@@ -1,9 +1,9 @@
 DEFAULT_RANDOM_NUMBERS_CONFIG = {
-    'n_test_cases': 10,
+    'n_test_cases': 5,
     'min_value': 1,
-    'max_value': 1,
-    'include_n_test_cases_flag': False,
-    'distinct_value_flag': False
+    'max_value': 7,
+    'include_n_test_cases_flag': True,
+    'distinct_value_flag': True
 }
 DEFAULT_RANDOM_ARRAY_CONFIG = {
     'n_test_cases': 1,
@@ -11,8 +11,8 @@ DEFAULT_RANDOM_ARRAY_CONFIG = {
     'arr_size_max': 100,  # dont care if next true
     'arr_sizes_all_same': False,
     'arr_sizes_uniform_distribution': False,  # dont care if prev true
-    'min_value': 1,
-    'max_value': 1000*1000,
+    'min_value': 0,
+    'max_value': 100000,
     'distinct_value_flag': True,
     'include_n_flag': False,
     'include_n_test_cases_flag': False,
@@ -20,16 +20,16 @@ DEFAULT_RANDOM_ARRAY_CONFIG = {
 DEFAULT_RANDOM_ARRAY_PAIRS_CONFIG = {
     'n_test_cases': 10,
     'arr_size_min': 1,
-    'arr_size_max': 5,  # dont care if next true
+    'arr_size_max': 100000,  # dont care if next true
     'arr_sizes_all_same': False,
-    'arr_sizes_uniform_distribution': True,  # dont care if prev true
-    'min_first_value': 2,
-    'max_first_value': 10,
-    'min_second_value': 2,
-    'max_second_value': 12,
-    'a_b_order': 'rand',  # if inc then > max_first_val and so on
-    'include_n_flag': False,
-    'include_n_test_cases_flag': False,
+    'arr_sizes_uniform_distribution': False,  # dont care if prev true
+    'min_first_value': 1,
+    'max_first_value': 90000,
+    'min_second_value': 1,
+    'max_second_value': 100000,
+    'a_b_order': 'inc',  # if inc then > max_first_val and so on
+    'include_n_flag': True,
+    'include_n_test_cases_flag': True,
 }
 DEFAULT_RANDOM_MATRIX_CONFIG = {
     'n_test_cases': 10,
@@ -50,13 +50,13 @@ DEFAULT_RANDOM_MATRIX_CONFIG = {
 DEFAULT_RANDOM_CHAR_MATRIX_CONFIG = config = {
     'n_test_cases': 10,
     'include_n_test_cases_flag': True,
-    'num_rows_min': 2,
-    'num_rows_max': 5,
-    'num_cols_min': 3,
-    'num_cols_max': 7,
+    'num_rows_min': 1,
+    'num_rows_max': 1000,
+    'num_cols_min': 1,
+    'num_cols_max': 1000,
     'arr_sizes_all_same': False,
     'arr_sizes_uniform_distribution': True,
-    'chars': "abcdsdasljd",
+    'chars': "OX",
     'distinct_flag': False,
     'include_n_m_flag': True,
     'square': False,

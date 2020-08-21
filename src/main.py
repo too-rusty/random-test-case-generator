@@ -144,9 +144,9 @@ def generate_random_char_matrix(config={}):
             res = "".join(chars[i % len(chars)] for i in range(r * c))
         return res
 
-    def make_mat_str(rows, cols, string, include_nm):
+    def make_mat_str(rows, cols, string, include_nm,delim=""):
         assert len(string) == rows * cols
-        res = [" ".join(map(lambda x: x.__str__(), string[i * cols: (i + 1) * cols])) \
+        res = [delim.join(map(lambda x: x.__str__(), string[i * cols: (i + 1) * cols])) \
                for i in range(rows)]
         if include_nm:
             res.append(rows.__str__() + " " + cols.__str__())
@@ -393,19 +393,24 @@ def generate_custom_input():
     N integers
 
     """
-    tc = random.randint(1, 20)
+    tc = random.randint(1, 10)
     content = to_str(tc)  # first line is tc
     for _ in range(tc):
-        arr_size = random.randint(1, 50000)
-        k = random.randint(1,1000*1000*1000)
+        arr_size = random.randint(1, 100000)
+        # k = random.randint(1,arr_size)
         # string vector size
-        second_line = list_to_str([arr_size,k])
+        second_line = list_to_str([arr_size])
         config = dc.DEFAULT_RANDOM_ARRAY_CONFIG
         config['arr_size_max'] = arr_size
         config['arr_size_min'] = arr_size
-        config['distinct_chars_flag'] = random.choice([True,False])
+        config['distinct_chars_flag'] = random.choice([False,True])
         third_line = generate_random_array(config)  # already produces string
-        content = list_to_str([content, second_line, third_line], "\n")
+        content = list_to_str([content,second_line, third_line], "\n")
+    # content = generate_random_numbers(dc.DEFAULT_RANDOM_NUMBERS_CONFIG)
+    # content = generate_random_char_matrix(dc.DEFAULT_RANDOM_CHAR_MATRIX_CONFIG)
+    # config = dc.DEFAULT_RANDOM_ARRAY_PAIRS_CONFIG
+    # config['n_test_cases'] = random.randint(1,10)
+    # content = generate_random_array_pairs(config=config)
     return content
 
 # no changes required here
@@ -474,9 +479,9 @@ if __name__ == '__main__':
     # can specify st as generate_n_inputs(st=2,n=10)
     # generates 10 tcs from no.2 and
     # the first test case can be input manually
-    generate_n_inputs(n=1)
+    generate_n_inputs(n=10)
     generate_outputs(code_type='cpp', code_file_name="code.cpp")
-    zip_it(1007)
+    zip_it(1019)
     # test()
     """
     steps
