@@ -1,6 +1,6 @@
 import random
 import os
-import default_configs as dc
+# import default_configs as dc
 import time
 
 
@@ -144,7 +144,7 @@ def generate_random_char_matrix(config={}):
             res = "".join(chars[i % len(chars)] for i in range(r * c))
         return res
 
-    def make_mat_str(rows, cols, string, include_nm,delim=""):
+    def make_mat_str(rows, cols, string, include_nm, delim=""):
         assert len(string) == rows * cols
         res = [delim.join(map(lambda x: x.__str__(), string[i * cols: (i + 1) * cols])) \
                for i in range(rows)]
@@ -187,6 +187,32 @@ def generate_random_char_matrix(config={}):
         mat.reverse()
     content = "\n".join(mat)
     return content
+
+
+def generate_random_tree(nodes, show_edges=True):
+    content = []
+    arr = [i for i in range(nodes)]
+    random.shuffle(arr)
+    edges = []
+    parent = [-1 for _ in range(nodes)]
+    for idx, v in enumerate(arr):
+        if not idx is 0:
+            parent[v] = random.choice(arr[:idx])
+            edges.append((parent[v] + 1, v + 1))
+    content.append(to_str(nodes))
+    if show_edges:
+        content.append(list_to_str(map(lambda l: list_to_str(l), edges), "\n"))
+    else:
+        content.append(list_to_str(parent))
+    content = list_to_str(content, "\n")
+    # the one with -1 is the root
+
+    return content
+
+
+def test2():
+    c = generate_random_tree(5, show_edges=False)
+    print(c)
 
 
 def generate_random_array_pairs(config={}):
@@ -403,9 +429,9 @@ def generate_custom_input():
         config = dc.DEFAULT_RANDOM_ARRAY_CONFIG
         config['arr_size_max'] = arr_size
         config['arr_size_min'] = arr_size
-        config['distinct_chars_flag'] = random.choice([False,True])
+        config['distinct_chars_flag'] = random.choice([False, True])
         third_line = generate_random_array(config)  # already produces string
-        content = list_to_str([content,second_line, third_line], "\n")
+        content = list_to_str([content, second_line, third_line], "\n")
     # content = generate_random_numbers(dc.DEFAULT_RANDOM_NUMBERS_CONFIG)
     # content = generate_random_char_matrix(dc.DEFAULT_RANDOM_CHAR_MATRIX_CONFIG)
     # config = dc.DEFAULT_RANDOM_ARRAY_PAIRS_CONFIG
@@ -413,12 +439,13 @@ def generate_custom_input():
     # content = generate_random_array_pairs(config=config)
     return content
 
+
 # no changes required here
 def generate_n_inputs(st=0, n=10, in_dir=IN_OUT_DIR):
     os.chdir(in_dir)
     _ = [os.remove(f) for f in os.listdir()]  # remove all
 
-    for i in range(st,st+n,1):
+    for i in range(st, st + n, 1):
         content = generate_custom_input()
         file_path = os.path.join(in_dir, to_str(i + 1) + ".in")
         write_to_file(file_path, content)
@@ -479,10 +506,11 @@ if __name__ == '__main__':
     # can specify st as generate_n_inputs(st=2,n=10)
     # generates 10 tcs from no.2 and
     # the first test case can be input manually
-    generate_n_inputs(n=10)
-    generate_outputs(code_type='cpp', code_file_name="code.cpp")
-    zip_it(1019)
+    # generate_n_inputs(n=10)
+    # generate_outputs(code_type='cpp', code_file_name="code.cpp")
+    # zip_it(1019)
     # test()
+    test2()
     """
     steps
     1. write code in code.py and call the function 
