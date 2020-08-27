@@ -210,9 +210,74 @@ def generate_random_tree(nodes, show_edges=True):
     return content
 
 
+global tim
+
+
+def dfs(u, pr, G, st, en):
+    global tim
+    st[u] = tim
+    tim += 1
+    # print("vis ", u, "st ", st[u])
+    for v in G[u]:
+        if v == pr: continue
+        dfs(v, u, G, st, en)
+    # tim+=1
+    # print("end ", u, "en ", tim)
+    en[u] = tim
+    tim += 1
+
+
+# this function is for a custom test case
+# to gen in and out ordering from the tree
+def generate_ordering_from_tree(nodes, correct_ordering=True):
+    global tim
+    tim = 1
+    # sten = None
+    if nodes is 1:
+        sten = [(1, 2)] if correct_ordering \
+            else [(random.randint(1, 10), random.randint(1, 10))]
+    else:
+        input = generate_random_tree(nodes)
+        edges = list(map(lambda x: tuple(map(int, x.split(" "))), input.split("\n")[1:]))
+        # print(nodes, edges)
+        st = [-1 for _ in range(nodes)]
+        en = [-1 for _ in range(nodes)]
+        G = [[] for _ in range(nodes)]
+        for e in edges:
+            u, v = map(lambda x: x - 1, e)
+            G[u].append(v)
+            G[v].append(u)
+        dfs(0, -1, G, st, en)
+        sten = list(zip(st, en))
+
+        def modify(tup, lis_tup, after, type):
+            if type == "overlap":
+                x, y = random.choice(lis_tup[after:])
+                return (random.randint(x, y), random.randint(y, y + 10))
+            if type == "inc":
+                x, y = tup
+                lim = random.randint(0, 10)
+                return (x + random.randint(0, lim), y + random.randint(0, lim))
+            if type == "eq":
+                return random.choice(lis_tup[after:])
+
+        if not correct_ordering:
+            # modify sten to be incorrect
+            to_mod = random.randint(1, nodes - 1)
+            for i in range(to_mod):
+                sten[i] = modify(sten[i], sten,
+                                 to_mod, random.choice(["eq", "inc", "overlap"]))
+    # print(sten)
+    content = to_str(nodes)
+    content = [content, list_to_str(map(lambda l: list_to_str(l), sten), "\n")]
+    content = list_to_str(content, "\n")
+    return content
+
+
 def test2():
-    c = generate_random_tree(5, show_edges=False)
-    print(c)
+    # c = generate_random_tree(5, show_edges=False)
+    # print(c)
+    print(generate_ordering_from_tree(10))
 
 
 def generate_random_array_pairs(config={}):
@@ -419,24 +484,26 @@ def generate_custom_input():
     N integers
 
     """
-    tc = random.randint(1, 10)
-    content = to_str(tc)  # first line is tc
-    for _ in range(tc):
-        arr_size = random.randint(1, 100000)
-        # k = random.randint(1,arr_size)
-        # string vector size
-        second_line = list_to_str([arr_size])
-        config = dc.DEFAULT_RANDOM_ARRAY_CONFIG
-        config['arr_size_max'] = arr_size
-        config['arr_size_min'] = arr_size
-        config['distinct_chars_flag'] = random.choice([False, True])
-        third_line = generate_random_array(config)  # already produces string
-        content = list_to_str([content, second_line, third_line], "\n")
+    # tc = random.randint(1, 10)
+    # content = to_str(tc)  # first line is tc
+    # for _ in range(tc):
+    #     arr_size = random.randint(1, 100000)
+    #     # k = random.randint(1,arr_size)
+    #     # string vector size
+    #     second_line = list_to_str([arr_size])
+    #     config = dc.DEFAULT_RANDOM_ARRAY_CONFIG
+    #     config['arr_size_max'] = arr_size
+    #     config['arr_size_min'] = arr_size
+    #     config['distinct_chars_flag'] = random.choice([False, True])
+    #     third_line = generate_random_array(config)  # already produces string
+    #     content = list_to_str([content, second_line, third_line], "\n")
     # content = generate_random_numbers(dc.DEFAULT_RANDOM_NUMBERS_CONFIG)
     # content = generate_random_char_matrix(dc.DEFAULT_RANDOM_CHAR_MATRIX_CONFIG)
     # config = dc.DEFAULT_RANDOM_ARRAY_PAIRS_CONFIG
     # config['n_test_cases'] = random.randint(1,10)
     # content = generate_random_array_pairs(config=config)
+    nodes = random.randint(1,10)
+    content = generate_ordering_from_tree(nodes,correct_ordering=random.choice([True,False]))
     return content
 
 
@@ -486,6 +553,10 @@ def generate_outputs(code_type='python', code_file_name="code.py",
         counter += 1
         st = time.time()
         gen_out(in_file, out_file)
+        # print
+        with open(out_file, "r") as f:
+            print(f.read())
+
         en = time.time()
         print("output generated for ", counter, "in ", (en - st) // 1000)
 
@@ -506,11 +577,11 @@ if __name__ == '__main__':
     # can specify st as generate_n_inputs(st=2,n=10)
     # generates 10 tcs from no.2 and
     # the first test case can be input manually
-    # generate_n_inputs(n=10)
-    # generate_outputs(code_type='cpp', code_file_name="code.cpp")
+    generate_n_inputs(n=5)
+    generate_outputs(code_type='cpp', code_file_name="code.cpp")
     # zip_it(1019)
     # test()
-    test2()
+    # test2()
     """
     steps
     1. write code in code.py and call the function 
