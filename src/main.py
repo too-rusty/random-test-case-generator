@@ -1,6 +1,6 @@
 import random
 import os
-# import default_configs as dc
+import default_configs as dc
 import time
 
 
@@ -67,10 +67,12 @@ def write_to_file(file_path: str, content: str):
 
 
 # ----------- main functions -------------------------
-def generate_random_array(config={}):
+def generate_random_array(config={},fns=[]):
     def gen_arr_str(N, min_v, max_v, distinct, include_n):
         res = generate_uniform_random_array(N, min_v, max_v) if distinct \
             else generate_non_uniform_random_array(N, min_v, max_v)
+        for fn in fns:
+            res = fn(res)
         res = map(lambda x: x.__str__(), res)
         res = [" ".join(res)]
         if include_n:
@@ -475,7 +477,7 @@ def to_str(x):
 
 # generates a single input file
 # make change here
-def generate_custom_input():
+def generate_custom_input(file_no:int):
     """
     for longest common prefix
 
@@ -484,26 +486,24 @@ def generate_custom_input():
     N integers
 
     """
-    # tc = random.randint(1, 10)
-    # content = to_str(tc)  # first line is tc
-    # for _ in range(tc):
-    #     arr_size = random.randint(1, 100000)
-    #     # k = random.randint(1,arr_size)
-    #     # string vector size
-    #     second_line = list_to_str([arr_size])
-    #     config = dc.DEFAULT_RANDOM_ARRAY_CONFIG
-    #     config['arr_size_max'] = arr_size
-    #     config['arr_size_min'] = arr_size
-    #     config['distinct_chars_flag'] = random.choice([False, True])
-    #     third_line = generate_random_array(config)  # already produces string
-    #     content = list_to_str([content, second_line, third_line], "\n")
-    # content = generate_random_numbers(dc.DEFAULT_RANDOM_NUMBERS_CONFIG)
-    # content = generate_random_char_matrix(dc.DEFAULT_RANDOM_CHAR_MATRIX_CONFIG)
-    # config = dc.DEFAULT_RANDOM_ARRAY_PAIRS_CONFIG
-    # config['n_test_cases'] = random.randint(1,10)
-    # content = generate_random_array_pairs(config=config)
-    nodes = random.randint(1,10)
-    content = generate_ordering_from_tree(nodes,correct_ordering=random.choice([True,False]))
+    tc = random.randint(1, 10)
+    content = to_str(tc)  # first line is tc
+    for _ in range(tc):
+        config = dc.DEFAULT_RANDOM_ARRAY_CONFIG
+        # config['str_sizes_uniform_distribution'] = False
+        z1 = random.randint(10,200) if file_no < 8 else 100000
+        # z2 = random.randint(10,200) if file_no < 8 else 100000
+        config['arr_size_max'] = config['arr_size_min'] = z1
+        config['distinct_value_flag'] =random.choice([True,False])
+        second_line = list_to_str([z1])
+        fns = [lambda l : sorted(l)]
+        third_line = generate_random_array(config=config,fns=fns)
+        # config['arr_size_max'] = config['arr_size_min'] = z2
+        # fourth_line = generate_random_array(config)
+
+
+        content = list_to_str([content,second_line,third_line], "\n")
+
     return content
 
 
@@ -513,7 +513,7 @@ def generate_n_inputs(st=0, n=10, in_dir=IN_OUT_DIR):
     _ = [os.remove(f) for f in os.listdir()]  # remove all
 
     for i in range(st, st + n, 1):
-        content = generate_custom_input()
+        content = generate_custom_input(i)
         file_path = os.path.join(in_dir, to_str(i + 1) + ".in")
         write_to_file(file_path, content)
 
@@ -554,8 +554,8 @@ def generate_outputs(code_type='python', code_file_name="code.py",
         st = time.time()
         gen_out(in_file, out_file)
         # print
-        with open(out_file, "r") as f:
-            print(f.read())
+        # with open(out_file, "r") as f:
+        #     print(f.read())
 
         en = time.time()
         print("output generated for ", counter, "in ", (en - st) // 1000)
@@ -569,6 +569,9 @@ def zip_it(problem_id, in_out_dir=IN_OUT_DIR):
     base_dir = os.path.join(in_out_dir, "../")
     file_path = base_dir + "problem_" + to_str(problem_id) + ".zip"
     print(file_path)
+    if os.path.exists(file_path):
+        rm_command = ["rm",file_path]
+        os.system(" ".join(rm_command))
     command = ["zip", file_path, "./{*.in,*.out}"]
     os.system(" ".join(command))
 
@@ -577,9 +580,9 @@ if __name__ == '__main__':
     # can specify st as generate_n_inputs(st=2,n=10)
     # generates 10 tcs from no.2 and
     # the first test case can be input manually
-    generate_n_inputs(n=5)
+    generate_n_inputs(n=10)
     generate_outputs(code_type='cpp', code_file_name="code.cpp")
-    # zip_it(1019)
+    zip_it(1041)
     # test()
     # test2()
     """
