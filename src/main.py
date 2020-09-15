@@ -71,6 +71,7 @@ def generate_random_array(config={},fns=[]):
     def gen_arr_str(N, min_v, max_v, distinct, include_n):
         res = generate_uniform_random_array(N, min_v, max_v) if distinct \
             else generate_non_uniform_random_array(N, min_v, max_v)
+        res = list(res)
         for fn in fns:
             res = fn(res)
         res = map(lambda x: x.__str__(), res)
@@ -495,17 +496,30 @@ def generate_custom_input(file_no:int):
         # z2 = random.randint(10,200) if file_no < 8 else 100000
         config['arr_size_max'] = config['arr_size_min'] = z1
         config['distinct_value_flag'] =random.choice([True,False])
+        # k = random.randint(-20,20)
         second_line = list_to_str([z1])
-        fns = [lambda l : sorted(l)]
-        third_line = generate_random_array(config=config,fns=fns)
+        third_line = generate_random_array(config=config)
         # config['arr_size_max'] = config['arr_size_min'] = z2
         # fourth_line = generate_random_array(config)
-
-
         content = list_to_str([content,second_line,third_line], "\n")
 
     return content
 
+def generate_custom_input_strings():
+    tc = random.randint(1,10)
+    con = to_str(tc)
+    for _ in range(tc):
+        config = dc.DEFAULT_RANDOM_STRING_CONFIG
+        line1 = generate_random_string(config)
+        line2 = generate_random_string(config)
+        if random.choice([True,False]):
+            line2 = ''
+            line2 += line1[0]
+            for c in line1[1:]:
+                if random.choice([True,False]):
+                    line2 += c
+        con = list_to_str([con,line2,line1],separator="\n")
+    return con
 
 # no changes required here
 def generate_n_inputs(st=0, n=10, in_dir=IN_OUT_DIR):
@@ -513,7 +527,8 @@ def generate_n_inputs(st=0, n=10, in_dir=IN_OUT_DIR):
     _ = [os.remove(f) for f in os.listdir()]  # remove all
 
     for i in range(st, st + n, 1):
-        content = generate_custom_input(i)
+        # content = generate_custom_input(i)
+        content = generate_custom_input_strings()
         file_path = os.path.join(in_dir, to_str(i + 1) + ".in")
         write_to_file(file_path, content)
 
@@ -582,7 +597,7 @@ if __name__ == '__main__':
     # the first test case can be input manually
     generate_n_inputs(n=10)
     generate_outputs(code_type='cpp', code_file_name="code.cpp")
-    zip_it(1041)
+    zip_it(1051)
     # test()
     # test2()
     """
