@@ -14,26 +14,26 @@ def two_sum():
         solve()
 
 
-def count_and_say():
-    def solve():
-        n = int(input())
-        now = '1'
-        prev = now[:]
-        for i in range(2, n + 1, 1):
-            cnt = 1
-            c = prev[0]
-            now = ''
-            for i in range(1, len(prev), 1):
-                if prev[i] == prev[i - 1]:
-                    cnt += 1
-                else:
-                    now += cnt.__str__() + c
-                    c = prev[i]
-                    cnt = 1
-            now += cnt.__str__() + c
-            prev = now[:]
-        print(now)
 
+def solve():
+    n = int(input())
+    now = '1'
+    prev = now[:]
+    for i in range(2, n + 1, 1):
+        cnt = 1
+        c = prev[0]
+        now = ''
+        for i in range(1, len(prev), 1):
+            if prev[i] == prev[i - 1]:
+                cnt += 1
+            else:
+                now += cnt.__str__() + c
+                c = prev[i]
+                cnt = 1
+        now += cnt.__str__() + c
+        prev = now[:]
+    print(now)
+def count_and_say():
     t = int(input())
     for _ in range(t):
         solve()

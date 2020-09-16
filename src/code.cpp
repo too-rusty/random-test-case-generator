@@ -312,17 +312,26 @@ bool isSubsequence(string s, string t) {
     }
     return j == s.length();
 }
+
 void solve7() {
     string s1, s2;
     cin >> s1 >> s2;
     cout<<(isSubsequence(s1,s2) ? "YES" : "NO") << endl;
 }
 
+void solve8() {
+    int n; cin >> n;
+    vector<int> a(n);
+    for(int i = 0; i < n; ++i) cin >> a[i];
+    cout<<*max_element(a.begin(), a.end())<<endl;
+
+}
+
 int main(int argc, char const *argv[])
 {
 	fastio;
 	t_times {
-	    solve7();
+	    solve8();
 	}
 	return 0;
 }

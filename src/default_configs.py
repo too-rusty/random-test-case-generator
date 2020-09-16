@@ -8,12 +8,12 @@ DEFAULT_RANDOM_NUMBERS_CONFIG = {
 DEFAULT_RANDOM_ARRAY_CONFIG = {
     'n_test_cases': 1,
     'arr_size_min': 1,
-    'arr_size_max': 100,  # dont care if next true
+    'arr_size_max': 1000,  # dont care if next true
     'arr_sizes_all_same': False,
     'arr_sizes_uniform_distribution': False,  # dont care if prev true
-    'min_value': 0,
-    'max_value': 100000,
-    'distinct_value_flag': True,
+    'min_value': 1,
+    'max_value': 100,
+    'distinct_value_flag': False,
     'include_n_flag': False,
     'include_n_test_cases_flag': False,
 }
@@ -67,11 +67,11 @@ DEFAULT_RANDOM_STRING_CONFIG = {
     'include_n_test_cases_flag': False,
     'include_n_flag': False,
     'str_size_min': 1,
-    'str_size_max': 100,
+    'str_size_max': 10000,
     'str_sizes_all_same': False,
     'str_sizes_uniform_distribution': True,
-    'chars': "abcdefghijklmnopqrstuvwxyz",
-    'distinct_chars_flag': True,
+    'chars': "ABCDEFGHIJKLMNOPQRSTUBWXYZ".lower(),
+    'distinct_chars_flag': False,
 }
 
 if __name__ == '__main__':

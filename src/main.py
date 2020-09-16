@@ -501,7 +501,7 @@ def generate_custom_input(file_no:int):
         third_line = generate_random_array(config=config)
         # config['arr_size_max'] = config['arr_size_min'] = z2
         # fourth_line = generate_random_array(config)
-        content = list_to_str([content,second_line,third_line], "\n")
+        content = list_to_str([content,second_line,third_line], separator="\n")
 
     return content
 
@@ -527,8 +527,8 @@ def generate_n_inputs(st=0, n=10, in_dir=IN_OUT_DIR):
     _ = [os.remove(f) for f in os.listdir()]  # remove all
 
     for i in range(st, st + n, 1):
-        # content = generate_custom_input(i)
-        content = generate_custom_input_strings()
+        content = generate_custom_input(i)
+        # content = generate_custom_input_strings()
         file_path = os.path.join(in_dir, to_str(i + 1) + ".in")
         write_to_file(file_path, content)
 
@@ -595,9 +595,9 @@ if __name__ == '__main__':
     # can specify st as generate_n_inputs(st=2,n=10)
     # generates 10 tcs from no.2 and
     # the first test case can be input manually
-    generate_n_inputs(n=10)
+    # generate_n_inputs(n=10,st=5)
     generate_outputs(code_type='cpp', code_file_name="code.cpp")
-    zip_it(1051)
+    zip_it(1052)
     # test()
     # test2()
     """
